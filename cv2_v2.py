@@ -1,6 +1,11 @@
 import numpy as np
 import cv2
 import skimage.exposure
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.cluster import k_means
+
+
 
 def load_image(path:str,display:bool):
     
@@ -216,7 +221,7 @@ def color_schema(color_name):
     yellow_green=[np.array([32, 20, 20]), np.array([56, 255, 255])]
     green=[np.array([56, 20, 20]), np.array([86, 255, 255])]
     blue_green=[np.array([86, 20, 20]), np.array([98, 255, 255])]
-    blue=[np.array([98, 20, 20]), np.array([122, 255, 255])]
+    blue=[np.array([98, 80, 20]), np.array([122, 255, 255])]
     blue_violet=[np.array([122, 20, 20]), np.array([136, 255, 255])]
     violet=[np.array([136, 20, 20]), np.array([148, 255, 255])]
     red_violet=[np.array([148, 20, 20]), np.array([177, 255, 255])]
@@ -245,6 +250,7 @@ def trace_pathx(path ,value):
     font = cv2.FONT_HERSHEY_COMPLEX
 
     n_list=[]
+    m_list=[]
 
     # Going through every contours found in the image.
     for cnt in contours :
@@ -263,9 +269,6 @@ def trace_pathx(path ,value):
 
         i = 0
 
-        coordinate_x=[]
-        coordinate_y=[]
-
 
         for j in n :
             if(i % 2 == 0):
@@ -281,7 +284,7 @@ def trace_pathx(path ,value):
                     # text on topmost coordinate.
                     cv2.putText(img, "Arrow tip", (x, y),
                                     font, 0.5, (255, 0, 0))
-                    
+                    m_list+=list(n)
                 else:
                     # text on remaining coordinates.
                     cv2.putText(img, string, (x, y), 
@@ -290,7 +293,10 @@ def trace_pathx(path ,value):
             i += 1
 
     moment_display(img)
-    coordinates= n_list
+    coordinates= m_list
+
+    #print(m_list)
+    #print(n_list)
             
     return img,coordinates
 
@@ -308,19 +314,33 @@ def simple_plot(coordinates):
     plt.rcParams["figure.autolayout"] = True
 
 
-    x = even
-    #m=min(x)
-    #x = [x - m for x in x]
-
-    y = odd
-
 
     plt.plot(x, y, 'r*')
-    plt.axis([min(x)-10 ,max(x)+10 , min(y)-10,max(y)+10 ])
+    plt.axis([min(x)-200 ,max(x)+400 , min(y)-10,max(y)+10 ])
 
     for i, j in zip(x, y):
        plt.text(i, j+0.5, '({}, {})'.format(i, j))
 
     plt.show()
+
+def find_centroids(coordinates):
+    x=coordinates[::2] 
+    y=coordinates[1::2] 
+
+    data={'x':x, 'y':y}
+    df=pd.DataFrame(data)
+    centroids= k_means(df,n_clusters=23)[0] #round to 2 decimals from k means 
+    centroids = np.around(centroids,2)
+    #this might have to be manually supported 
+    #k-means uses euclidean distance, is this the best for geospatial clustering?
+    #look into below code later:
+    #df = pd.read_csv('gps.csv')
+    #coords = df.as_matrix(columns=['lat', 'lon'])
+    #db = DBSCAN(eps=eps, min_samples=ms, algorithm='ball_tree', metric='haversine').fit(np.radians(coords))
+    
+    #returned in one array, easily digestable for simple_plot()
+    centroids_coordinates=[item for sublist  in centroids.tolist() for item in sublist]
+    
+    return centroids_coordinates
 
 
