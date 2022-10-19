@@ -316,21 +316,32 @@ def simple_plot(coordinates):
 
 
     plt.plot(x, y, 'r*')
-    plt.axis([min(x)-200 ,max(x)+400 , min(y)-10,max(y)+10 ])
 
+    #Find the axis for lower and upper for x and y.
+    #Added both arrays to have a scaled proof, which allows the path to look more
+    #in line with the actual picture when displaying the plot 
+    plt.axis([min(x+y)+50 ,max(x+y)+50 , min(y+x)+50,max(y+x)+50 ]) 
+
+    #add the axis coordinates to the plot
     for i, j in zip(x, y):
        plt.text(i, j+0.5, '({}, {})'.format(i, j))
-
+    
     plt.show()
 
-def find_centroids(coordinates):
+
+def find_centroids(coordinates, n_clusters=23):
     x=coordinates[::2] 
     y=coordinates[1::2] 
 
+    #adding data to dict
     data={'x':x, 'y':y}
+    #creating dataframe with dict
     df=pd.DataFrame(data)
-    centroids= k_means(df,n_clusters=23)[0] #round to 2 decimals from k means 
+    #finding the centroids based on the x-y existing coordinates and number of clusters TBI
+    centroids= k_means(df,n_clusters=n_clusters)[0]
+    #round to 2 decimals from k means
     centroids = np.around(centroids,2)
+
     #this might have to be manually supported 
     #k-means uses euclidean distance, is this the best for geospatial clustering?
     #look into below code later:
