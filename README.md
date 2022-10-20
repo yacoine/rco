@@ -24,7 +24,17 @@ find the optimal rock climbing path based on taking a picture or video.
     
 #### Phase 2: Using the center holds and finding best hand and feet path based on human biomechanics 
     1. Create human body contraints
-    2. What is the next step? 
+    2. What is the next step? Creating body constraints and creating object body
+    3. Constraints:
+        a.Two feet and two hands (4 points of contact possible),
+    ignoring complexity of using other body parts as well (e.g.:knee)
+        b. Feet can only be at the same height or lower than hands
+    (to accomodate for lower levels of climbing and keep model simpler)
+        c. Only one foot can be at the same level as the hands
+        d. You can have two points on one hold
+        e. start position is input value
+        f. end position is input value (two hands)
+
     
 
 # Recommended modules
