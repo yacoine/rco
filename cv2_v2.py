@@ -4,6 +4,7 @@ import skimage.exposure
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.cluster import k_means
+import time
 
 
 
@@ -154,6 +155,7 @@ def assisted_masking(path, lower=np.array([100, 20, 20]), upper=np.array([130, 2
     cv2.createTrackbar('Val Max','image',vmax,255,empty)
 
     #while loop is true until if statement is true, then breaks out of while loop 
+
     while(True):
 
         # for button pressing and changing
@@ -320,7 +322,7 @@ def simple_plot(coordinates):
     #Find the axis for lower and upper for x and y.
     #Added both arrays to have a scaled proof, which allows the path to look more
     #in line with the actual picture when displaying the plot 
-    plt.axis([min(x+y)+50 ,max(x+y)+50 , min(y+x)+50,max(y+x)+50 ])
+    plt.axis([min(x+y)-50 ,max(x+y)+50 , min(y+x)-50,max(y+x)+50 ])
     num=0
 
     #turn x,y to tuple based linearly, set turns it back into readable arr of arr (tuple)
@@ -364,3 +366,42 @@ def find_centroids(coordinates, n_clusters=23):
     return centroids_coordinates
 
 
+#dynamically finds the center of holds with manual help based on a UI slider
+#path of the original image is passed and coordinates from the masked contouring of selected holds
+#return are the final centroids
+def find_holds(path,coordinates):
+
+    img=cv2.imread(path)
+    cv2.namedWindow('image')
+    cv2.createTrackbar('Number','image',5,49,empty)
+    font = cv2.FONT_HERSHEY_COMPLEX
+
+
+    while(True):
+
+            # for button pressing and changing
+        k = cv2.waitKey(1) & 0xFF
+            #once "ESC" button is pressed, loop breaks (true for linux)
+        if k == 27:
+
+            break
+
+        #retrieving the number of holds recommended by user based on track bar position
+        n= cv2.getTrackbarPos('Number', 'image')
+        if n ==-1:
+            pass
+        else:
+            centroids=find_centroids(coordinates,n_clusters=n)
+
+        x=centroids[::2] 
+        y=centroids[1::2] 
+        for i,j in zip(x,y):
+
+            cv2.putText(img, "X", (int(i), int(j)), font, 0.8, (30, 40, 0)) 
+
+        cv2.imshow('image',img)
+        img=cv2.imread(path_result)
+        #time.sleep(0.5)
+    cv2.destroyAllWindows();cv2.waitKey(1);
+    
+    return centroids
