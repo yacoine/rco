@@ -320,11 +320,20 @@ def simple_plot(coordinates):
     #Find the axis for lower and upper for x and y.
     #Added both arrays to have a scaled proof, which allows the path to look more
     #in line with the actual picture when displaying the plot 
-    plt.axis([min(x+y)+50 ,max(x+y)+50 , min(y+x)+50,max(y+x)+50 ]) 
+    plt.axis([min(x+y)+50 ,max(x+y)+50 , min(y+x)+50,max(y+x)+50 ])
+    num=0
+
+    #turn x,y to tuple based linearly, set turns it back into readable arr of arr (tuple)
+    #then sorted the tuple based on x
+    co_tuple=sorted(set(zip(y,x)))
+
 
     #add the axis coordinates to the plot
-    for i, j in zip(x, y):
-       plt.text(i, j+0.5, '({}, {})'.format(i, j))
+    for j, i in co_tuple: 
+       #plt.text(i, j+0.5, '({}, {})'.format(i, j))
+       plt.text(i, j+0.5, 'Hold'+str(num) )
+       num+=1
+       
     
     plt.show()
 
