@@ -1,5 +1,6 @@
 <ListOfTaskListEntry>
   <TaskListEntry file="" description="Open jupyter notebook on vs studio " />
-  <TaskListEntry file="" description="Second phase of smoothing image recognition with colors" />
-  <TaskListEntry file="" />
+  <TaskListEntry file="" description="Second phase of smoothing image recognition with colors" completed="True" />
+  <TaskListEntry file="" description="Add parameters on find_centroids to take number of centroids" priority="High" completed="True" />
+  <TaskListEntry file="" description="Issue is that when a hold is removed during the next_move() function, it deletes the hold from the other object. Figure out why the objects are sharing attributes." />
 </ListOfTaskListEntry>

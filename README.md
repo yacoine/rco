@@ -31,7 +31,7 @@ find the optimal rock climbing path based on taking a picture or video.
         b. Feet can only be at the same height or lower than hands
     (to accomodate for lower levels of climbing and keep model simpler)
         c. Only one foot can be at the same level as the hands
-        d. You can have two points on one hold
+        d. You can have two points on one hold (to start, keep complexity simple and not have feet and hands cross)
         e. start position is input value
         f. end position is input value (two hands)
 
