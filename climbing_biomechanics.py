@@ -85,8 +85,8 @@ def cross_constraint(lh,rh):
     try:
         
 
-        rhx=list(zip(*rh))[0] #turn right hand tuple coordinates to list of only x coordinates
-        lhx=list(zip(*lh))[0] # ^ same for left hand
+        rhx=list(zip(*rh))[1] #turn right hand tuple coordinates to list of only x coordinates
+        lhx=list(zip(*lh))[1] # ^ same for left hand
 
         #if there are common values check no cross constaint,
         #if no values are the same then no need to check constraint 
@@ -125,7 +125,10 @@ def cross_constraint(lh,rh):
 #move function that allows rh and lh to move from start to end
 #issue is that the current pattern is rh and lh
 #in future it would need to be random forest with ability for hands to not be sequential
-def move(rh,lh):    
+def move(rh,lh):
+    plot=[]
+   
+    hand_naming=[]    
     i=0
     while rh.current != rh.end or lh.current !=lh.end:
         i+=1 #for printing number of moves
@@ -138,21 +141,75 @@ def move(rh,lh):
            l,r=cross_constraint(lh=lh.length_constraint(),rh= rh.length_constraint() )
 
         print('lh{}'.format(i))
-
+        hand_naming.append('lh{}'.format(i))
+        plot.append(lh.current)
         #checking the hand to hand distance of potential holds
         #fixed versus dynamic hand, in this case LEFT hand is dynamic
         l=h2h_length_constraint(rh,lh,l)
         lh.next_move(l)
         lh.print_attr()
+        
         #checking the hand to hand distance of potential holds
         #fixed versus dynamic hand, in this case RIGHT hand is dynamic
-        r=h2h_length_constraint(lh,rh,r)
-
+        r=h2h_length_constraint(lh,rh,r) 
+        plot.append(rh.current)
         print('rh{}'.format(i))
+        hand_naming.append('rh{}'.format(i))
         rh.next_move(r)
         rh.print_attr()
+
+def movex(rh,lh,lf, rf):
+    
+    plot=[]
+   
+    hand_naming=[]    
+    i=0
+    while rh.current != rh.end or lh.current !=lh.end:
+        i+=1 #for printing number of moves
+
+        # checking length constraint and cross constraint
+        # return of left hand (l) potential holds and right hand (r)
+        if cross_constraint(lh=lh.length_constraint(),rh= rh.length_constraint() ) ==-1:
+           break
+        else:
+           l,r=cross_constraint(lh=lh.length_constraint(),rh= rh.length_constraint() )
+
+        print('lh{}'.format(i))
+        hand_naming.append('lh{}'.format(i))
+        plot.append(lh.current)
+        #checking the hand to hand distance of potential holds
+        #fixed versus dynamic hand, in this case LEFT hand is dynamic
+        l=h2h_length_constraint(rh,lh,l)
+        lh.next_move(l)
+        lh.print_attr()
         
-    return 0
+        #checking the hand to hand distance of potential holds
+        #fixed versus dynamic hand, in this case RIGHT hand is dynamic
+        r=h2h_length_constraint(lh,rh,r) 
+        plot.append(rh.current)
+        print('rh{}'.format(i))
+        hand_naming.append('rh{}'.format(i))
+        rh.next_move(r)
+        rh.print_attr()
+
+        #move left foot
+        plot.append(lf.current)
+        left_foot=leg_hand_constraint(lh,lf.existing_holds)
+        lf.next_move(left_foot)
+        print('lf{}'.format(i))
+        hand_naming.append('lf{}'.format(i))
+        lf.print_attr()
+        
+
+        #move right foot
+        plot.append(rf.current)
+        right_foot=leg_hand_constraint(rh,rf.existing_holds)
+        rf.next_move(right_foot)
+        print('rf{}'.format(i))
+        hand_naming.append('rf{}'.format(i))
+        rf.print_attr()        
+        
+    return plot,hand_naming
 
 def h2h_length_constraint(fix_hand,dynamic_hand, dynamic_holds):
     
@@ -172,6 +229,19 @@ def h2h_length_constraint(fix_hand,dynamic_hand, dynamic_holds):
             #print(math.dist(hand_fix,w))
             potential_holds.append(w)
 
+    return potential_holds
+
+def leg_hand_constraint(hand,existing_holds):
+    
+    hand_current=hand.current
+
+    potential_holds=[]
+    wall=existing_holds
+
+    for w in wall:
+        if w[0] < hand_current[0]:
+            potential_holds.append(wall[ wall.index(w)] )
+            
     return potential_holds
 
 
