@@ -17,9 +17,10 @@ class Appendage:
 
   def print_attr(self):
 
-    print("start:{} \nend:{} \ncurrent:{} \nexisting_holds:{}"
-                .format(self.start,self.end,self.current, self.existing_holds) )
-
+    #print("start:{} \nend:{} \ncurrent:{} \nexisting_holds:{}"
+                #.format(self.start,self.end,self.current, self.existing_holds) )
+    print("current: {}".format(self.start))
+    
     return 0
             
 
@@ -46,6 +47,7 @@ class Appendage:
 
     self.existing_holds=wall #make sure that the object has the latest wall coordinates available
 
+    
     return potential_holds
 
   def next_move(self, potential_holds):
@@ -53,18 +55,22 @@ class Appendage:
     ###!!!###
     # ADD LENGTH_CONSTRAINT() 
         #select random hold from potential holds
-    current_hold=random.sample(potential_holds,1)  
-            #update current hold of appendage to newly select hold
+    if len(potential_holds)==0:
+        
+        return -1
+    else:
+        current_hold=random.sample(potential_holds,1)  
+                #update current hold of appendage to newly select hold
 
-    self.current=current_hold[0]
+        self.current=current_hold[0]
 
-            #remove current hold from existing holds
-    #self.existing_holds.remove(current_hold[0])
-            #turn start hold as current hold
+                #remove current hold from existing holds
+        #self.existing_holds.remove(current_hold[0])
+                #turn start hold as current hold
     
-    self.start=self.current
+        self.start=self.current
 
-    return 0
+        return 0
 
 #supporting def to compare two tuples, false if not equal, true means one value min is equal
 def comp_tuple(tuple1,tuple2):
@@ -76,56 +82,97 @@ def comp_tuple(tuple1,tuple2):
 
 def cross_constraint(lh,rh):
 
-    rhx=list(zip(*rh))[0] #turn right hand tuple coordinates to list of only x coordinates
-    lhx=list(zip(*lh))[0] # ^ same for left hand
+    try:
+        
 
-    #if there are common values check no cross constaint,
-    #if no values are the same then no need to check constraint 
+        rhx=list(zip(*rh))[0] #turn right hand tuple coordinates to list of only x coordinates
+        lhx=list(zip(*lh))[0] # ^ same for left hand
 
-    if comp_tuple(lh,rh):  
+        #if there are common values check no cross constaint,
+        #if no values are the same then no need to check constraint 
 
-        validL=[]
+        if comp_tuple(lh,rh):  
 
-        #min(rhx) 
-        for i in lhx:
-            if i <= min(rhx):
-                validL.append(lh[ lhx.index(i)] )
-          #Find the index of the array and append the tuple based on the index
+            validL=[]
 
-        #print(validL)
+            #min(rhx) 
+            for i in lhx:
+                if i <= min(rhx):
+                    validL.append(lh[ lhx.index(i)] )
+              #Find the index of the array and append the tuple based on the index
 
-        validR=[]
+            #print(validL)
+
+            validR=[]
 
     
-        for j in rhx:
-            if j >= min(rhx):
-                validR.append(rh[ rhx.index(j)] )
-    else:
-        validL=lh
-        validR=rh
+            for j in rhx:
+                if j >= min(rhx):
+                    validR.append(rh[ rhx.index(j)] )
+        else:
+            validL=lh
+            validR=rh
+        #print("validR={}".format(validR))
+        #print("validL={}".format(validL))
 
-    return validL,validR
+        return validL,validR
 
+    except IndexError:
+        return -1 
 
+    #return validL,validR
+
+#move function that allows rh and lh to move from start to end
+#issue is that the current pattern is rh and lh
+#in future it would need to be random forest with ability for hands to not be sequential
 def move(rh,lh):    
     i=0
-    while rh.current != rh.end and lh.current !=lh.end:
-        i+=1
-        print(rh.existing_holds)
-        print('right hand length')
-        print(rh.length_constraint())
-        l,r=cross_constraint(lh=lh.length_constraint(),rh= rh.length_constraint() )
+    while rh.current != rh.end or lh.current !=lh.end:
+        i+=1 #for printing number of moves
+
+        # checking length constraint and cross constraint
+        # return of left hand (l) potential holds and right hand (r)
+        if cross_constraint(lh=lh.length_constraint(),rh= rh.length_constraint() ) ==-1:
+           break
+        else:
+           l,r=cross_constraint(lh=lh.length_constraint(),rh= rh.length_constraint() )
 
         print('lh{}'.format(i))
+
+        #checking the hand to hand distance of potential holds
+        #fixed versus dynamic hand, in this case LEFT hand is dynamic
+        l=h2h_length_constraint(rh,lh,l)
         lh.next_move(l)
         lh.print_attr()
-
+        #checking the hand to hand distance of potential holds
+        #fixed versus dynamic hand, in this case RIGHT hand is dynamic
+        r=h2h_length_constraint(lh,rh,r)
 
         print('rh{}'.format(i))
         rh.next_move(r)
         rh.print_attr()
         
     return 0
+
+def h2h_length_constraint(fix_hand,dynamic_hand, dynamic_holds):
+    
+    #potential holds available to dynamic hand
+    wall=dynamic_holds
+    #hand to compare with
+    fix=fix_hand.current
+
+    #hand to move
+    dynamic=dynamic_hand.current
+
+    #potential holds
+    potential_holds=[]
+
+    for w in wall:
+        if math.dist(fix,w)<= (fix_hand.length+dynamic_hand.length):
+            #print(math.dist(hand_fix,w))
+            potential_holds.append(w)
+
+    return potential_holds
 
 
 
