@@ -192,9 +192,14 @@ def movex(rh,lh,lf, rf):
         rh.next_move(r)
         rh.print_attr()
 
+        #constraints for feet, length and crossing
+        l_foot,r_foot=cross_constraint(lf.length_constraint(),rf.length_constraint())
         #move left foot
         plot.append(lf.current)
-        left_foot=leg_hand_constraint(lh,lf.existing_holds)
+        left_foot=leg_hand_constraint(lh,l_foot)
+        
+        #adding cross constraint to right foot and left foot
+        
         lf.next_move(left_foot)
         print('lf{}'.format(i))
         hand_naming.append('lf{}'.format(i))
@@ -203,7 +208,7 @@ def movex(rh,lh,lf, rf):
 
         #move right foot
         plot.append(rf.current)
-        right_foot=leg_hand_constraint(rh,rf.existing_holds)
+        right_foot=leg_hand_constraint(rh,r_foot)
         rf.next_move(right_foot)
         print('rf{}'.format(i))
         hand_naming.append('rf{}'.format(i))
