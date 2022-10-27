@@ -2,9 +2,10 @@
 import math
 import matplotlib.pyplot as plt
 import random
+import time
+
 
 class Appendage:
-
   
 
   def __init__(self,start, end, current,length,existing_holds,b_type='hand'):
@@ -19,7 +20,7 @@ class Appendage:
 
     #print("start:{} \nend:{} \ncurrent:{} \nexisting_holds:{}"
                 #.format(self.start,self.end,self.current, self.existing_holds) )
-    print("current: {}".format(self.start))
+    #print("current: {}".format(self.current))
     
     return 0
             
@@ -130,17 +131,17 @@ def move(rh,lh):
    
     hand_naming=[]    
     i=0
-    while rh.current != rh.end or lh.current !=lh.end:
+    while rh.current != rh.end and lh.current !=lh.end:
         i+=1 #for printing number of moves
 
         # checking length constraint and cross constraint
-        # return of left hand (l) potential holds and right hand (r)
+        # return of left hand (l) potential holds and right hand (r) 
         if cross_constraint(lh=lh.length_constraint(),rh= rh.length_constraint() ) ==-1:
            break
         else:
            l,r=cross_constraint(lh=lh.length_constraint(),rh= rh.length_constraint() )
 
-        print('lh{}'.format(i))
+        #print('lh{}'.format(i))
         hand_naming.append('lh{}'.format(i))
         plot.append(lh.current)
         #checking the hand to hand distance of potential holds
@@ -153,7 +154,7 @@ def move(rh,lh):
         #fixed versus dynamic hand, in this case RIGHT hand is dynamic
         r=h2h_length_constraint(lh,rh,r) 
         plot.append(rh.current)
-        print('rh{}'.format(i))
+        #print('rh{}'.format(i))
         hand_naming.append('rh{}'.format(i))
         rh.next_move(r)
         rh.print_attr()
@@ -174,7 +175,7 @@ def movex(rh,lh,lf, rf):
         else:
            l,r=cross_constraint(lh=lh.length_constraint(),rh= rh.length_constraint() )
 
-        print('lh{}'.format(i))
+        #print('lh{}'.format(i))
         hand_naming.append('lh{}'.format(i))
         plot.append(lh.current)
         #checking the hand to hand distance of potential holds
@@ -187,7 +188,7 @@ def movex(rh,lh,lf, rf):
         #fixed versus dynamic hand, in this case RIGHT hand is dynamic
         r=h2h_length_constraint(lh,rh,r) 
         plot.append(rh.current)
-        print('rh{}'.format(i))
+        #print('rh{}'.format(i))
         hand_naming.append('rh{}'.format(i))
         rh.next_move(r)
         rh.print_attr()
@@ -201,7 +202,7 @@ def movex(rh,lh,lf, rf):
         #adding cross constraint to right foot and left foot
         
         lf.next_move(left_foot)
-        print('lf{}'.format(i))
+        #print('lf{}'.format(i))
         hand_naming.append('lf{}'.format(i))
         lf.print_attr()
         
@@ -210,7 +211,7 @@ def movex(rh,lh,lf, rf):
         plot.append(rf.current)
         right_foot=leg_hand_constraint(rh,r_foot)
         rf.next_move(right_foot)
-        print('rf{}'.format(i))
+        #print('rf{}'.format(i))
         hand_naming.append('rf{}'.format(i))
         rf.print_attr()        
         
@@ -249,6 +250,38 @@ def leg_hand_constraint(hand,existing_holds):
             
     return potential_holds
 
+#find the quickest path to the top of the wall
+#right the order of hand and foot movement is:
+# right hand, left hand, right foot, left foot, right foot
+#and this will change to find best optimal combination
+def find_min(rh,lh,rf,lf,wall,n=100):
+    path_examples={}
+    hand_foot_order=[]
 
+    
+    rh_start,rh_end,rh_length,rh_wall=rh.start,rh.end,rh.length,rh.existing_holds
+    lh_start,lh_end,lh_length,lh_wall=lh.start,lh.end,lh.length,lh.existing_holds
+    rf_start,rf_end,rf_length,rf_wall=rf.start,rf.end,rf.length,rf.existing_holds
+    lf_start,lf_end,lf_length,lf_wall=lf.start,lf.end,lf.length,lf.existing_holds
 
- 
+    
+    for x in range(n):
+
+        r_hand=Appendage(start=rh_start,end=rh_end,current=rh_start,length=rh_length,existing_holds=wall)
+        l_hand=Appendage(start=lh_start,end=lh_end,current=lh_start,length=lh_length,existing_holds=wall)
+        r_foot=Appendage(start=rf_start,end=rf_end,current=rf_start,length=rf_length,existing_holds=wall)
+        l_foot=Appendage(start=lf_start,end=lf_end,current=lf_start,length=lf_length,existing_holds=wall)
+
+        
+        plot,name=movex(r_hand,l_hand,l_foot,r_foot)
+        hand_foot_order.append(name)
+        if len(plot) in path_examples:
+            path_examples[len(plot)].append(plot)
+        else:
+            path_examples[len(plot)]= [plot]
+            #making sure that tuple is in array format
+
+    
+    min_path=min(path_examples)
+        
+    return min_path,path_examples[min_path],hand_foot_order
