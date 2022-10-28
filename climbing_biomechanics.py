@@ -142,7 +142,7 @@ def move(rh,lh):
            l,r=cross_constraint(lh=lh.length_constraint(),rh= rh.length_constraint() )
 
         #print('lh{}'.format(i))
-        hand_naming.append('lh{}'.format(i))
+        hand_naming.append('left ✋{}'.format(i))
         plot.append(lh.current)
         #checking the hand to hand distance of potential holds
         #fixed versus dynamic hand, in this case LEFT hand is dynamic
@@ -155,7 +155,7 @@ def move(rh,lh):
         r=h2h_length_constraint(lh,rh,r) 
         plot.append(rh.current)
         #print('rh{}'.format(i))
-        hand_naming.append('rh{}'.format(i))
+        hand_naming.append('right ✋{}'.format(i))
         rh.next_move(r)
         rh.print_attr()
 
@@ -176,7 +176,7 @@ def movex(rh,lh,lf, rf):
            l,r=cross_constraint(lh=lh.length_constraint(),rh= rh.length_constraint() )
 
         #print('lh{}'.format(i))
-        hand_naming.append('lh{}'.format(i))
+        hand_naming.append('LH{}'.format(i))
         plot.append(lh.current)
         #checking the hand to hand distance of potential holds
         #fixed versus dynamic hand, in this case LEFT hand is dynamic
@@ -189,7 +189,7 @@ def movex(rh,lh,lf, rf):
         r=h2h_length_constraint(lh,rh,r) 
         plot.append(rh.current)
         #print('rh{}'.format(i))
-        hand_naming.append('rh{}'.format(i))
+        hand_naming.append('RH{}'.format(i))
         rh.next_move(r)
         rh.print_attr()
 
@@ -203,7 +203,7 @@ def movex(rh,lh,lf, rf):
         
         lf.next_move(left_foot)
         #print('lf{}'.format(i))
-        hand_naming.append('lf{}'.format(i))
+        hand_naming.append('LF{}'.format(i))
         lf.print_attr()
         
 
@@ -212,7 +212,7 @@ def movex(rh,lh,lf, rf):
         right_foot=leg_hand_constraint(rh,r_foot)
         rf.next_move(right_foot)
         #print('rf{}'.format(i))
-        hand_naming.append('rf{}'.format(i))
+        hand_naming.append('RF{}'.format(i))
         rf.print_attr()        
         
     return plot,hand_naming
