@@ -2,7 +2,8 @@
 
 
 # Introduction
-
+Find link to the article about this project:
+https://www.linkedin.com/pulse/building-rock-climbing-pathfinder-pt-1-yassine-a%25C3%25A7oine/
 
 
 Rock climbing optimizer (rock climbing optimizer). Creating a micro-service based application that helps people
